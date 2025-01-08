@@ -1,7 +1,9 @@
 function App() {
   return (
     <>
-      <div>Age Calculator App</div>
+      <div className="text-xl text-blue-500 font-medium">
+        Age Calculator App
+      </div>
     </>
   )
 }
