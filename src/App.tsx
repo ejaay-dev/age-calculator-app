@@ -3,10 +3,11 @@ import AgeCalculator from "./components/AgeCalculator"
 function App() {
   return (
     <>
-      <div className="text-xl text-blue-500 font-medium">
-        Age Calculator App
-        <AgeCalculator />
-      </div>
+      <main className="w-screen h-screen flex items-center justify-center bg-off-white">
+        <section className="flex items-center justify-center w-full h-full">
+          <AgeCalculator />
+        </section>
+      </main>
     </>
   )
 }

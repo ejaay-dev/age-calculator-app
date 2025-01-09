@@ -14,7 +14,7 @@ const AgeCalculator = () => {
     calculatedDays: 0,
   })
 
-  // Get the current date
+  // Initialize the current date
   const currentDate = new Date()
   const currentDay = currentDate.getDate()
   const currentMonth = currentDate.getMonth() + 1 // Adjusting for 0-indexed format
@@ -22,7 +22,8 @@ const AgeCalculator = () => {
 
   // Function to calculate the age
   const calculateAge = () => {
-    // Convert the year, month, and days to a number
+    // Initialize the birth year, month, and day
+    // Convert the year, month, and day to a number
     const birthYear = Number(year)
     const birthMonth = Number(month)
     const birthDay = Number(day)
@@ -58,57 +59,81 @@ const AgeCalculator = () => {
 
   return (
     <>
-      <div className="mt-5">
-        <form
-          className="flex flex-row gap-3"
-          onSubmit={(e) => {
-            e.preventDefault()
-            calculateAge()
-          }}
-        >
-          <div className="flex flex-col">
-            <label htmlFor="day">Day</label>
-            <input
-              type="text"
-              value={day}
-              onChange={(e) => setDay(e.target.value)}
-              required
-              placeholder="DD"
-              className="border"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="month">Month</label>
-            <input
-              type="text"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              required
-              placeholder="MM"
-              className="border"
-            />
-          </div>
-          <div className="flex flex-col">
-            <label htmlFor="year">Year</label>
-            <input
-              type="text"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              required
-              placeholder="YYYY"
-              className="border"
-            />
-          </div>
-          <div className="flex justify-center">
-            <button type="submit">Calculate Age</button>
-          </div>
-        </form>
-      </div>
-      <div className="mt-5">
-        <p>
-          Your age is: {age.calculatedYears} years, {age.calculatedMonths}{" "}
-          months, {age.calculatedDays} days
-        </p>
+      {/* Main Container */}
+      <div className="flex flex-col align center h-[340px] w-full max-w-[600px] bg-custom-white border rounded-3xl rounded-br-[150px]">
+        {/* Form Container */}
+        <div className="mt-10 ml-10">
+          <form className="flex flex-row gap-5">
+            <div className="flex flex-col">
+              <label
+                htmlFor="day"
+                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+              >
+                DAY
+              </label>
+              <input
+                type="text"
+                value={day}
+                onChange={(e) => setDay(e.target.value)}
+                required
+                placeholder="DD"
+                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="month"
+                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+              >
+                MONTH
+              </label>
+              <input
+                type="text"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+                required
+                placeholder="MM"
+                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label
+                htmlFor="year"
+                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+              >
+                YEAR
+              </label>
+              <input
+                type="text"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                required
+                placeholder="YYYY"
+                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
+              />
+            </div>
+            <div
+              onClick={(e) => {
+                e.preventDefault()
+                calculateAge()
+              }}
+              className="flex justify-center items-center w-16 h-16 rounded-full bg-custom-purple"
+            >
+              <img
+                src="/public/icon-arrow.svg"
+                alt="Calculate Age"
+                className="w-8 h-8"
+              />
+            </div>
+          </form>
+        </div>
+        {/* Result Container */}
+        <div className="mt-10 ml-10">
+          <p className="font-poppins text-custom-purple">
+            Your age is: {age.calculatedYears} years, {age.calculatedMonths}{" "}
+            months, {age.calculatedDays} days
+          </p>
+        </div>
       </div>
     </>
   )
