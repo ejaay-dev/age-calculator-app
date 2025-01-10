@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import CalculatedResult from "./CalculatedResult"
 
 const AgeCalculator = () => {
   const [day, setDay] = useState<number | string>("")
@@ -132,29 +133,11 @@ const AgeCalculator = () => {
             </div>
           </form>
         </div>
-
         {/* Result Container */}
         <div className="m-4 mt-8">
-          <div className="flex gap-2">
-            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
-              {age.calculatedYears}
-            </p>
-            <p className="font-poppins font-extrabold italic text-4xl">years</p>
-          </div>
-          <div className="flex gap-2">
-            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
-              {age.calculatedMonths}
-            </p>
-            <p className="font-poppins font-extrabold italic text-4xl">
-              months
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
-              {age.calculatedDays}
-            </p>
-            <p className="font-poppins font-extrabold italic text-4xl">days</p>
-          </div>
+          <CalculatedResult value={age.calculatedYears} label="years" />
+          <CalculatedResult value={age.calculatedMonths} label="months" />
+          <CalculatedResult value={age.calculatedDays} label="days" />
         </div>
       </div>
     </>
