@@ -60,79 +60,101 @@ const AgeCalculator = () => {
   return (
     <>
       {/* Main Container */}
-      <div className="flex flex-col align center h-[340px] w-full max-w-[600px] bg-custom-white border rounded-3xl rounded-br-[150px]">
+      <div className="flex flex-col h-[340px] w-full max-w-[280px] bg-custom-white rounded-3xl rounded-br-[80px] shadow-sm">
         {/* Form Container */}
-        <div className="mt-10 ml-10">
-          <form className="flex flex-row gap-5">
-            <div className="flex flex-col">
-              <label
-                htmlFor="day"
-                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
-              >
-                DAY
-              </label>
-              <input
-                type="text"
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
-                required
-                placeholder="DD"
-                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
-              />
+        <div className="m-4 mt-8">
+          <form className="flex flex-col gap-5">
+            <div className="flex flex-row justify-center items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="day"
+                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                >
+                  DAY
+                </label>
+                <input
+                  type="text"
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                  required
+                  placeholder="DD"
+                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="month"
+                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                >
+                  MONTH
+                </label>
+                <input
+                  type="text"
+                  value={month}
+                  onChange={(e) => setMonth(e.target.value)}
+                  required
+                  placeholder="MM"
+                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label
+                  htmlFor="year"
+                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                >
+                  YEAR
+                </label>
+                <input
+                  type="text"
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  required
+                  placeholder="YYYY"
+                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md"
+                />
+              </div>
             </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="month"
-                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+            <div className="flex justify-center items-center relative mt-5">
+              <hr className="bg-light-grey w-full max-w-[250px]" />
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  calculateAge()
+                }}
+                className="absolute z-10 w-12 h-12 flex justify-center items-center rounded-full bg-custom-purple hover:bg-off-black"
               >
-                MONTH
-              </label>
-              <input
-                type="text"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                required
-                placeholder="MM"
-                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label
-                htmlFor="year"
-                className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
-              >
-                YEAR
-              </label>
-              <input
-                type="text"
-                value={year}
-                onChange={(e) => setYear(e.target.value)}
-                required
-                placeholder="YYYY"
-                className="font-poppins text-[20px] font-semibold text-smokey-grey pl-2 border rounded-md w-24 h-10"
-              />
-            </div>
-            <div
-              onClick={(e) => {
-                e.preventDefault()
-                calculateAge()
-              }}
-              className="flex justify-center items-center w-16 h-16 rounded-full bg-custom-purple"
-            >
-              <img
-                src="/public/icon-arrow.svg"
-                alt="Calculate Age"
-                className="w-8 h-8"
-              />
+                <img
+                  src="/public/icon-arrow.svg"
+                  alt="Calculate Age"
+                  className="w-6 h-6"
+                />
+              </button>
             </div>
           </form>
         </div>
+
         {/* Result Container */}
-        <div className="mt-10 ml-10">
-          <p className="font-poppins text-custom-purple">
-            Your age is: {age.calculatedYears} years, {age.calculatedMonths}{" "}
-            months, {age.calculatedDays} days
-          </p>
+        <div className="m-4 mt-8">
+          <div className="flex gap-2">
+            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
+              {age.calculatedYears}
+            </p>
+            <p className="font-poppins font-extrabold italic text-4xl">years</p>
+          </div>
+          <div className="flex gap-2">
+            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
+              {age.calculatedMonths}
+            </p>
+            <p className="font-poppins font-extrabold italic text-4xl">
+              months
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
+              {age.calculatedDays}
+            </p>
+            <p className="font-poppins font-extrabold italic text-4xl">days</p>
+          </div>
         </div>
       </div>
     </>
