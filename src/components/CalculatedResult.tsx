@@ -7,10 +7,12 @@ const CalculatedResult = ({ value, label }: AgeResultProps) => {
   return (
     <>
       <div className="flex gap-2">
-        <p className="font-poppins font-extrabold italic text-custom-purple text-4xl">
+        <p className="font-poppins font-extrabold italic text-custom-purple text-4xl md:text-7xl">
           {value === 0 ? "--" : value}
         </p>
-        <p className="font-poppins font-extrabold italic text-4xl">{label}</p>
+        <p className="font-poppins font-extrabold italic text-4xl md:text-7xl">
+          {label}
+        </p>
       </div>
     </>
   )
