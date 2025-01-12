@@ -125,7 +125,7 @@ const AgeCalculator = () => {
                 className="absolute z-10 w-12 h-12 md:w-16 md:h-16 flex justify-center items-center rounded-full bg-custom-purple hover:bg-off-black"
               >
                 <img
-                  src="/public/icon-arrow.svg"
+                  src="/icon-arrow.svg"
                   alt="Calculate Age"
                   className="w-6 h-6 md:w-8 md:h-8"
                 />
