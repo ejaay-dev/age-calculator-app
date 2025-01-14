@@ -1,10 +1,32 @@
 import { useEffect, useState } from "react"
+import { z } from "zod"
 import CalculatedResult from "./CalculatedResult"
 
+// Defining the validation schema using Zod (Day, Month, and Year)
+const dateFormSchema = z.object({
+  day: z
+    .string()
+    .regex(/^(0[1-9]|[12][0-9]|3[01])$/, "Must be a valid day (01-31)")
+    .transform((val) => parseInt(val))
+    .refine((val) => !isNaN(val), { message: "This is not a valid day!" }),
+  month: z
+    .string()
+    .regex(/^(0[1-9]|1[0-2])$/, "Must be a valid month (01-12)")
+    .transform((val) => parseInt(val))
+    .refine((val) => !isNaN(val), { message: "This is not a valid month!" }),
+  year: z
+    .string()
+    .regex(/^\d{4}$/, "Must be a valid year (YYYY)")
+    .transform((val) => parseInt(val))
+    .refine((val) => val <= new Date().getFullYear(), {
+      message: "Year must be in the past!",
+    }),
+})
+
 const AgeCalculator = () => {
-  const [day, setDay] = useState<number | string>("")
-  const [month, setMonth] = useState<number | string>("")
-  const [year, setYear] = useState<number | string>("")
+  const [day, setDay] = useState<string>("")
+  const [month, setMonth] = useState<string>("")
+  const [year, setYear] = useState<string>("")
   const [age, setAge] = useState<{
     calculatedYears: number
     calculatedMonths: number
@@ -14,6 +36,7 @@ const AgeCalculator = () => {
     calculatedMonths: 0,
     calculatedDays: 0,
   })
+  const [validationError, setValidationError] = useState<string | null>(null)
 
   // Initialize the current date
   const currentDate = new Date()
@@ -23,34 +46,51 @@ const AgeCalculator = () => {
 
   // Function to calculate the age
   const calculateAge = () => {
-    // Initialize the birth year, month, and day
-    // Convert the year, month, and day to a number
-    const birthYear = Number(year)
-    const birthMonth = Number(month)
-    const birthDay = Number(day)
-    const birthDate = new Date(birthYear, birthMonth, birthDay)
+    try {
+      // Validate the inputs using Zod schema
+      const parsedData = dateFormSchema.parse({ day, month, year })
 
-    let calculatedYears = currentYear - birthDate.getFullYear()
-    let calculatedMonths = currentMonth - birthDate.getMonth()
-    let calculatedDays = currentDay - birthDate.getDate()
+      // Initialize the birth year, month, and day
+      const birthYear = parsedData.year
+      const birthMonth = parsedData.month - 1
+      const birthDay = parsedData.day
+      const birthDate = new Date(birthYear, birthMonth, birthDay)
 
-    // Adjustment for negative days
-    if (calculatedDays < 0) {
-      // Borrow days from the previous month
-      calculatedMonths--
-      // Get the last day of the previous month
-      calculatedDays += new Date(currentYear, currentMonth - 1, 0).getDate() // Last day of the previous month
+      // Validate if the inputted date is not in the future
+      if (birthDate.getTime() > currentDate.getTime()) {
+        setValidationError("Date must be current or in the past!")
+        setAge({ calculatedYears: 0, calculatedMonths: 0, calculatedDays: 0 })
+        return
+      }
+
+      //  Calculation for the date (currentDate - birthDate)
+      let calculatedYears = currentYear - birthDate.getFullYear()
+      let calculatedMonths = currentMonth - birthDate.getMonth() - 1
+      let calculatedDays = currentDay - birthDate.getDate()
+
+      // Adjustment for negative days
+      if (calculatedDays < 0) {
+        // Borrow days from the previous month
+        calculatedMonths--
+        // Get the last day of the previous month
+        calculatedDays += new Date(currentYear, currentMonth - 1, 0).getDate() // Last day of the previous month
+      }
+
+      // Adjustment for negative months
+      if (calculatedMonths < 0) {
+        // Borrow a year from the calculated years
+        calculatedYears--
+        calculatedMonths += 12 // Add 12 months (borrow a year)
+      }
+
+      // Set the calculated age
+      setAge({ calculatedYears, calculatedMonths, calculatedDays })
+      setValidationError(null) // Clear any previous validation errors
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationError(error.errors[0].message)
+      }
     }
-
-    // Adjustment for negative months
-    if (calculatedMonths < 0) {
-      // Borrow a year from the calculated years
-      calculatedYears--
-      calculatedMonths += 12 // Add 12 months (borrow a year)
-    }
-
-    // Set the calculated age
-    setAge({ calculatedYears, calculatedMonths, calculatedDays })
   }
 
   // Effect hook to log age whenever it changes
@@ -115,6 +155,13 @@ const AgeCalculator = () => {
                 />
               </div>
             </div>
+
+            {/* Show validation error */}
+            {validationError && (
+              <p className="text-sm text-red-500 mt-2">{validationError}</p>
+            )}
+
+            {/* Button Container */}
             <div className="flex justify-center items-center relative mt-5 md:justify-end">
               <hr className="border-light-grey w-full" />
               <button
@@ -133,6 +180,7 @@ const AgeCalculator = () => {
             </div>
           </form>
         </div>
+
         {/* Result Container */}
         <div className="flex flex-col gap-2 m-4 mt-8">
           <CalculatedResult value={age.calculatedYears} label="years" />
