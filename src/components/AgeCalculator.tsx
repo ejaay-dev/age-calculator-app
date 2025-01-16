@@ -6,21 +6,27 @@ import CalculatedResult from "./CalculatedResult"
 const dateFormSchema = z.object({
   day: z
     .string()
-    .regex(/^(0[1-9]|[12][0-9]|3[01])$/, "Must be a valid day (01-31)")
-    .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val), { message: "This is not a valid day!" }),
+    .min(1, { message: "This field is required" })
+    .refine((val) => val === "" || /^(0[1-9]|[12][0-9]|3[01])$/.test(val), {
+      message: "Must be a valid day",
+    })
+    .transform((val) => parseInt(val)),
+  // .refine((val) => !isNaN(val), { message: "This is not a valid day!" })
   month: z
     .string()
-    .regex(/^(0[1-9]|1[0-2])$/, "Must be a valid month (01-12)")
-    .transform((val) => parseInt(val))
-    .refine((val) => !isNaN(val), { message: "This is not a valid month!" }),
+    .min(1, { message: "This field is required" })
+    .refine((val) => val === "" || /^(0[1-9]|1[0-2])$/.test(val), {
+      message: "Must be a valid month",
+    })
+    .transform((val) => parseInt(val)),
+  // .refine((val) => !isNaN(val), { message: "This is not a valid month!" })
   year: z
     .string()
-    .regex(/^\d{4}$/, "Must be a valid year (YYYY)")
-    .transform((val) => parseInt(val))
-    .refine((val) => val <= new Date().getFullYear(), {
-      message: "Year must be in the past!",
-    }),
+    .min(1, { message: "This field is required" })
+    .refine((val) => val === "" || /^\d{4}$/.test(val), {
+      message: "Must be a valid year",
+    })
+    .transform((val) => parseInt(val)),
 })
 
 const AgeCalculator = () => {
@@ -36,7 +42,11 @@ const AgeCalculator = () => {
     calculatedMonths: 0,
     calculatedDays: 0,
   })
-  const [validationError, setValidationError] = useState<string | null>(null)
+
+  // Error state for each input field
+  const [dayError, setDayError] = useState<string | null>(null)
+  const [monthError, setMonthError] = useState<string | null>(null)
+  const [yearError, setYearError] = useState<string | null>(null)
 
   // Initialize the current date
   const currentDate = new Date()
@@ -47,8 +57,14 @@ const AgeCalculator = () => {
   // Function to calculate the age
   const calculateAge = () => {
     try {
+      // Clear previous errors
+      setDayError(null)
+      setMonthError(null)
+      setYearError(null)
+
       // Validate the inputs using Zod schema
       const parsedData = dateFormSchema.parse({ day, month, year })
+      console.log("Parsed Data:", parsedData)
 
       // Initialize the birth year, month, and day
       const birthYear = parsedData.year
@@ -58,7 +74,9 @@ const AgeCalculator = () => {
 
       // Validate if the inputted date is not in the future
       if (birthDate.getTime() > currentDate.getTime()) {
-        setValidationError("Date must be current or in the past!")
+        setDayError("Must be in the past")
+        setMonthError("Must be in the past")
+        setYearError("Must be in the past")
         setAge({ calculatedYears: 0, calculatedMonths: 0, calculatedDays: 0 })
         return
       }
@@ -85,18 +103,39 @@ const AgeCalculator = () => {
 
       // Set the calculated age
       setAge({ calculatedYears, calculatedMonths, calculatedDays })
-      setValidationError(null) // Clear any previous validation errors
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setValidationError(error.errors[0].message)
+        console.log("Zod Validation Errors: ", error.errors) // Log validation error from Zod
+
+        // Extract and set specific errors for each input field
+        error.errors.forEach((e) => {
+          if (e.path[0] === "day") {
+            setDayError(e.message)
+          }
+          if (e.path[0] === "month") {
+            setMonthError(e.message)
+          }
+          if (e.path[0] === "year") {
+            setYearError(e.message)
+          }
+        })
       }
     }
   }
 
-  // Effect hook to log age whenever it changes
+  // Effect hook to reset errors when the input changes
   useEffect(() => {
-    console.log(age) // Logs the age whenever it updates
-  }, [age])
+    if (day) setDayError(null)
+    if (month) setMonthError(null)
+    if (year) setYearError(null)
+  }, [day, month, year])
+
+  // Effect hook to log error whenever it changes
+  // useEffect(() => {
+  //   console.log("Day Error: ", dayError)
+  //   console.log("Month Error: ", monthError)
+  //   console.log("Year Error:", yearError)
+  // }, [dayError, monthError, yearError])
 
   return (
     <>
@@ -105,7 +144,7 @@ const AgeCalculator = () => {
         {/* Form Container */}
         <div className="m-4 mt-10">
           <form className="flex flex-col gap-5">
-            <div className="flex flex-row justify-center items-center gap-3 md:gap-5 md:justify-start">
+            <div className="flex flex-row items-center justify-center gap-3 md:gap-5 md:justify-start">
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
                   htmlFor="day"
@@ -115,12 +154,18 @@ const AgeCalculator = () => {
                 </label>
                 <input
                   type="text"
+                  id="day"
                   value={day}
                   onChange={(e) => setDay(e.target.value)}
                   required
                   placeholder="DD"
                   className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
-                />
+                />{" "}
+                {dayError && (
+                  <p className="text-red-400 text-[10px] italic font-poppins">
+                    {dayError}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
@@ -131,12 +176,18 @@ const AgeCalculator = () => {
                 </label>
                 <input
                   type="text"
+                  id="month"
                   value={month}
                   onChange={(e) => setMonth(e.target.value)}
                   required
                   placeholder="MM"
                   className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
                 />
+                {monthError && (
+                  <p className="text-red-400 text-[10px] italic font-poppins">
+                    {monthError}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
@@ -147,29 +198,35 @@ const AgeCalculator = () => {
                 </label>
                 <input
                   type="text"
+                  id="year"
                   value={year}
                   onChange={(e) => setYear(e.target.value)}
                   required
                   placeholder="YYYY"
                   className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
                 />
+                {yearError && (
+                  <p className="text-red-400 text-[10px] italic font-poppins">
+                    {yearError}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Show validation error */}
-            {validationError && (
-              <p className="text-sm text-red-500 mt-2">{validationError}</p>
-            )}
+            {/* {validationError && (
+              <p className="mt-2 text-sm text-red-500">{validationError}</p>
+            )} */}
 
             {/* Button Container */}
-            <div className="flex justify-center items-center relative mt-5 md:justify-end">
-              <hr className="border-light-grey w-full" />
+            <div className="relative flex items-center justify-center mt-5 md:justify-end">
+              <hr className="w-full border-light-grey" />
               <button
                 onClick={(e) => {
                   e.preventDefault()
                   calculateAge()
                 }}
-                className="absolute z-10 w-12 h-12 md:w-16 md:h-16 flex justify-center items-center rounded-full bg-custom-purple hover:bg-off-black"
+                className="absolute z-10 flex items-center justify-center w-12 h-12 rounded-full md:w-16 md:h-16 bg-custom-purple hover:bg-off-black"
               >
                 <img
                   src="/icon-arrow.svg"
