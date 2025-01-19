@@ -24,9 +24,12 @@ const dateFormSchema = z.object({
     .string()
     .min(1, { message: "This field is required" })
     .refine((val) => val === "" || /^\d{4}$/.test(val), {
-      message: "Must be a valid year",
+      message: "Not valid year (YYYY)",
     })
-    .transform((val) => parseInt(val)),
+    .transform((val) => parseInt(val))
+    .refine((val) => val <= new Date().getFullYear(), {
+      message: "Must be in the past",
+    }),
 })
 
 const AgeCalculator = () => {
@@ -140,7 +143,7 @@ const AgeCalculator = () => {
   return (
     <>
       {/* Main Container */}
-      <div className="flex flex-col h-full w-full max-h-[360px] max-w-[280px] bg-custom-white rounded-3xl rounded-br-[80px] shadow-sm md:max-h-[460px] md:max-w-[580px] md:pl-6 md:pr-6 md:rounded-br-[140px]">
+      <div className="flex flex-col h-full w-full max-h-[400px] max-w-[280px] bg-custom-white rounded-3xl rounded-br-[80px] shadow-sm md:max-h-[500px] md:max-w-[580px] md:pl-6 md:pr-6 md:rounded-br-[140px]">
         {/* Form Container */}
         <div className="m-4 mt-10">
           <form className="flex flex-col gap-5">
@@ -148,7 +151,9 @@ const AgeCalculator = () => {
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
                   htmlFor="day"
-                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                  className={`font-poppins text-[10px] font-semibold tracking-[3px] ${
+                    dayError ? "text-red-500" : "text-smokey-grey "
+                  }`}
                 >
                   DAY
                 </label>
@@ -159,18 +164,24 @@ const AgeCalculator = () => {
                   onChange={(e) => setDay(e.target.value)}
                   required
                   placeholder="DD"
-                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
-                />{" "}
-                {dayError && (
-                  <p className="text-red-400 text-[10px] italic font-poppins">
-                    {dayError}
-                  </p>
-                )}
+                  className={`h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12 focus:outline-none ${
+                    dayError ? "border-red-500" : "focus:border-custom-purple"
+                  }`}
+                />
+                <div className="flex items-center justify-start h-8 md:h-4">
+                  {dayError && (
+                    <p className="text-red-400 text-[10px] italic font-poppins">
+                      {dayError}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
                   htmlFor="month"
-                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                  className={`font-poppins text-[10px] font-semibold  tracking-[3px] ${
+                    monthError ? "text-red-500" : "text-smokey-grey"
+                  }`}
                 >
                   MONTH
                 </label>
@@ -181,18 +192,24 @@ const AgeCalculator = () => {
                   onChange={(e) => setMonth(e.target.value)}
                   required
                   placeholder="MM"
-                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
+                  className={`h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12 focus:outline-none ${
+                    monthError ? "border-red-500" : "focus:border-custom-purple"
+                  }`}
                 />
-                {monthError && (
-                  <p className="text-red-400 text-[10px] italic font-poppins">
-                    {monthError}
-                  </p>
-                )}
+                <div className="flex items-center justify-start h-8 md:h-4">
+                  {monthError && (
+                    <p className="text-red-400 text-[10px] italic font-poppins">
+                      {monthError}
+                    </p>
+                  )}
+                </div>
               </div>
               <div className="flex flex-col gap-1 md:gap-2">
                 <label
                   htmlFor="year"
-                  className="font-poppins text-[10px] font-semibold text-smokey-grey tracking-[3px]"
+                  className={`font-poppins text-[10px] font-semibold tracking-[3px] ${
+                    yearError ? "text-red-500" : "text-smokey-grey"
+                  }`}
                 >
                   YEAR
                 </label>
@@ -203,23 +220,21 @@ const AgeCalculator = () => {
                   onChange={(e) => setYear(e.target.value)}
                   required
                   placeholder="YYYY"
-                  className="h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12"
+                  className={`h-10 w-full max-w-28 font-poppins text-[20px] font-semibold text-off-black pl-2 border border-light-grey rounded-md md:h-12 focus:outline-none ${
+                    yearError ? "border-red-500" : "focus:border-custom-purple"
+                  }`}
                 />
-                {yearError && (
-                  <p className="text-red-400 text-[10px] italic font-poppins">
-                    {yearError}
-                  </p>
-                )}
+                <div className="flex items-center justify-start h-8 md:h-4">
+                  {yearError && (
+                    <p className="text-red-400 text-[10px] italic font-poppins">
+                      {yearError}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-
-            {/* Show validation error */}
-            {/* {validationError && (
-              <p className="mt-2 text-sm text-red-500">{validationError}</p>
-            )} */}
-
             {/* Button Container */}
-            <div className="relative flex items-center justify-center mt-5 md:justify-end">
+            <div className="relative flex items-center justify-center mt-4 md:justify-end">
               <hr className="w-full border-light-grey" />
               <button
                 onClick={(e) => {
@@ -237,9 +252,8 @@ const AgeCalculator = () => {
             </div>
           </form>
         </div>
-
         {/* Result Container */}
-        <div className="flex flex-col gap-2 m-4 mt-8">
+        <div className="flex flex-col gap-2 m-6 mt-8">
           <CalculatedResult value={age.calculatedYears} label="years" />
           <CalculatedResult value={age.calculatedMonths} label="months" />
           <CalculatedResult value={age.calculatedDays} label="days" />
