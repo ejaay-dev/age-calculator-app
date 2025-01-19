@@ -23,13 +23,13 @@ const dateFormSchema = z.object({
   year: z
     .string()
     .min(1, { message: "This field is required" })
-    .refine((val) => val === "" || /^\d{4}$/.test(val), {
-      message: "Not valid year (YYYY)",
+    .refine((val) => val.length === 0 || /^\d{4}$/.test(val), {
+      message: "Invalid year (YYYY)",
     })
-    .transform((val) => parseInt(val))
-    .refine((val) => val <= new Date().getFullYear(), {
-      message: "Must be in the past",
-    }),
+    .transform((val) => parseInt(val)),
+  // .refine((val) => val <= new Date().getFullYear(), {
+  //   message: "Must be in the past",
+  // })
 })
 
 const AgeCalculator = () => {
