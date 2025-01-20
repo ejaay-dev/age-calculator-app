@@ -2,7 +2,9 @@ import { useEffect, useState } from "react"
 import { z } from "zod"
 import CalculatedResult from "./CalculatedResult"
 import { dateFormSchema } from "../utils/form-schema"
+import { getMaxDaysInMonth } from "../utils/date-helpers"
 
+// Code for AgeCalculator Component starts here...
 const AgeCalculator = () => {
   const [day, setDay] = useState<string>("")
   const [month, setMonth] = useState<string>("")
@@ -16,7 +18,6 @@ const AgeCalculator = () => {
     calculatedMonths: 0,
     calculatedDays: 0,
   })
-
   // Error state for each input field
   const [dayError, setDayError] = useState<string | null>(null)
   const [monthError, setMonthError] = useState<string | null>(null)
@@ -28,13 +29,6 @@ const AgeCalculator = () => {
   const currentMonth = currentDate.getMonth() + 1 // Adjusting for 0-indexed format
   const currentYear = currentDate.getFullYear()
 
-  // Function to check if the given month has 31 days
-  const checkIfMonthHas31Days = (month: number, year: number) => {
-    const nextMonth = month === 12 ? 0 : month // If it is December, the next month is January (0-indexed)
-    const nextMonthDate = new Date(year, nextMonth, 0) // Get the last day of the current month
-    return nextMonthDate.getDate() === 31
-  }
-
   // Function to calculate the age
   const calculateAge = () => {
     try {
@@ -45,7 +39,7 @@ const AgeCalculator = () => {
 
       // Validate the inputs using Zod schema
       const parsedData = dateFormSchema.parse({ day, month, year })
-      console.log("Parsed Data:", parsedData)
+      // console.log("Parsed Data:", parsedData)
 
       // Initialize the birth year, month, and day
       const birthYear = parsedData.year
@@ -62,18 +56,11 @@ const AgeCalculator = () => {
         return
       }
 
-      // Check if the month has 31 days
-      const isValid31Days = checkIfMonthHas31Days(birthMonth + 1, birthYear)
-      // console.log("birthDay: ", birthDay)
-      // console.log("isValid31Days: ", isValid31Days)
-      if (birthDay === 31 && !isValid31Days) {
-        setDayError("Invalid date")
-        setAge({
-          calculatedDays: 0,
-          calculatedMonths: 0,
-          calculatedYears: 0,
-        })
-
+      // Validate if the day and month are valid
+      const maxDaysInMonth = getMaxDaysInMonth(birthMonth, birthYear)
+      if (birthDay < 1 || birthDay > maxDaysInMonth) {
+        setDayError("Must be a valid date")
+        setAge({ calculatedDays: 0, calculatedMonths: 0, calculatedYears: 0 })
         useEffect(() => {
           console.log(age)
         }, [age])
