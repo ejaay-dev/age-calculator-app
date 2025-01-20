@@ -1,36 +1,7 @@
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import CalculatedResult from "./CalculatedResult"
-
-// Defining the validation schema using Zod (Day, Month, and Year)
-const dateFormSchema = z.object({
-  day: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .refine((val) => val === "" || /^(0[1-9]|[12][0-9]|3[01])$/.test(val), {
-      message: "Must be a valid day",
-    })
-    .transform((val) => parseInt(val)),
-  // .refine((val) => !isNaN(val), { message: "This is not a valid day!" })
-  month: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .refine((val) => val === "" || /^(0[1-9]|1[0-2])$/.test(val), {
-      message: "Must be a valid month",
-    })
-    .transform((val) => parseInt(val)),
-  // .refine((val) => !isNaN(val), { message: "This is not a valid month!" })
-  year: z
-    .string()
-    .min(1, { message: "This field is required" })
-    .refine((val) => val.length === 0 || /^\d{4}$/.test(val), {
-      message: "Invalid year (YYYY)",
-    })
-    .transform((val) => parseInt(val)),
-  // .refine((val) => val <= new Date().getFullYear(), {
-  //   message: "Must be in the past",
-  // })
-})
+import { dateFormSchema } from "../utils/form-schema"
 
 const AgeCalculator = () => {
   const [day, setDay] = useState<string>("")
@@ -57,6 +28,13 @@ const AgeCalculator = () => {
   const currentMonth = currentDate.getMonth() + 1 // Adjusting for 0-indexed format
   const currentYear = currentDate.getFullYear()
 
+  // Function to check if the given month has 31 days
+  const checkIfMonthHas31Days = (month: number, year: number) => {
+    const nextMonth = month === 12 ? 0 : month // If it is December, the next month is January (0-indexed)
+    const nextMonthDate = new Date(year, nextMonth, 0) // Get the last day of the current month
+    return nextMonthDate.getDate() === 31
+  }
+
   // Function to calculate the age
   const calculateAge = () => {
     try {
@@ -82,6 +60,23 @@ const AgeCalculator = () => {
         setYearError("Must be in the past")
         setAge({ calculatedYears: 0, calculatedMonths: 0, calculatedDays: 0 })
         return
+      }
+
+      // Check if the month has 31 days
+      const isValid31Days = checkIfMonthHas31Days(birthMonth + 1, birthYear)
+      // console.log("birthDay: ", birthDay)
+      // console.log("isValid31Days: ", isValid31Days)
+      if (birthDay === 31 && !isValid31Days) {
+        setDayError("Invalid date")
+        setAge({
+          calculatedDays: 0,
+          calculatedMonths: 0,
+          calculatedYears: 0,
+        })
+
+        useEffect(() => {
+          console.log(age)
+        }, [age])
       }
 
       //  Calculation for the date (currentDate - birthDate)
@@ -114,11 +109,9 @@ const AgeCalculator = () => {
         error.errors.forEach((e) => {
           if (e.path[0] === "day") {
             setDayError(e.message)
-          }
-          if (e.path[0] === "month") {
+          } else if (e.path[0] === "month") {
             setMonthError(e.message)
-          }
-          if (e.path[0] === "year") {
+          } else if (e.path[0] === "year") {
             setYearError(e.message)
           }
         })
