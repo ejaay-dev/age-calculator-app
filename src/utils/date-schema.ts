@@ -25,7 +25,7 @@ export const dateFormSchema = z.object({
     .string()
     .min(1, { message: "This field is required" })
     .refine((val) => val.length === 0 || /^\d{4}$/.test(val), {
-      message: "Invalid year (YYYY)",
+      message: "Must be a valid year",
     })
     .transform((val) => parseInt(val)),
   // .refine((val) => val <= new Date().getFullYear(), {

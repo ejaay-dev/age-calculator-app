@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { z } from "zod"
 import CalculatedResult from "./CalculatedResult"
-import { dateFormSchema } from "../utils/form-schema"
+import { dateFormSchema } from "../utils/date-schema"
 import { getMaxDaysInMonth } from "../utils/date-helpers"
 
 // Code for AgeCalculator Component starts here...
