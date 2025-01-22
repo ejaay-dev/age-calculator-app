@@ -234,9 +234,12 @@ const AgeCalculator = () => {
         </div>
         {/* Result Container */}
         <div className="flex flex-col gap-2 m-6 mt-8">
-          <CalculatedResult value={age.calculatedYears} label="years" />
-          <CalculatedResult value={age.calculatedMonths} label="months" />
-          <CalculatedResult value={age.calculatedDays} label="days" />
+          <CalculatedResult ageValue={age.calculatedYears} dateLabel="years" />
+          <CalculatedResult
+            ageValue={age.calculatedMonths}
+            dateLabel="months"
+          />
+          <CalculatedResult ageValue={age.calculatedDays} dateLabel="days" />
         </div>
       </div>
     </>
